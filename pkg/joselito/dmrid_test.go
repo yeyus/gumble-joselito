@@ -8,7 +8,7 @@ import (
 )
 
 func TestDMRIDMarshall_FixInt(t *testing.T) {
-	id := &DMRID{Id: uint32(93)}
+	id := &DMRID{Id: 93}
 
 	b, err := msgpack.Marshal(id)
 	if err != nil {
@@ -22,7 +22,7 @@ func TestDMRIDMarshall_FixInt(t *testing.T) {
 }
 
 func TestDMRIDMarshall_Uint8(t *testing.T) {
-	id := &DMRID{Id: uint32(214)}
+	id := &DMRID{Id: 214}
 
 	b, err := msgpack.Marshal(id)
 	if err != nil {
@@ -36,7 +36,7 @@ func TestDMRIDMarshall_Uint8(t *testing.T) {
 }
 
 func TestDMRIDMarshall_Uint16(t *testing.T) {
-	id := &DMRID{Id: uint32(3112)}
+	id := &DMRID{Id: 3112}
 
 	b, err := msgpack.Marshal(id)
 	if err != nil {
@@ -50,7 +50,7 @@ func TestDMRIDMarshall_Uint16(t *testing.T) {
 }
 
 func TestDMRIDMarshall_Uint32(t *testing.T) {
-	id := &DMRID{Id: uint32(520312)}
+	id := &DMRID{Id: 520312}
 
 	b, err := msgpack.Marshal(id)
 	if err != nil {
