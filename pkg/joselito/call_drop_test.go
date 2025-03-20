@@ -19,7 +19,7 @@ func TestMessageCallDropMarshall(t *testing.T) {
 	}
 }
 
-func TestMessageUnmarshall(t *testing.T) {
+func TestMessageCallDropUnmarshall(t *testing.T) {
 	entity := NewMessageCallDrop()
 
 	msg := []byte{0x91, 0x0C}
