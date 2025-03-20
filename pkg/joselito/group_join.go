@@ -13,9 +13,10 @@ type MessageGroupJoin struct {
 	Groups []*DMRID
 }
 
-func NewMessageGroupJoin() *MessageGroupJoin {
+func NewMessageGroupJoin(groups []*DMRID) *MessageGroupJoin {
 	return &MessageGroupJoin{
-		Type: GROUP_JOIN,
+		Type:   GROUP_JOIN,
+		Groups: groups,
 	}
 }
 
