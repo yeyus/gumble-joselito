@@ -17,4 +17,5 @@ github.com/yeyus/gumble v0.0.0-20250318020455-e9fee879fa0f h1:oHw+k6atRpBatH7T6D
 github.com/yeyus/gumble v0.0.0-20250318020455-e9fee879fa0f/go.mod h1:3wUC5CWsk9IRM7ka8g7UWRwh2W2rS+xRQ4JQlTxu0HY=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c h1:dUUwHk2QECo/6vqA44rthZ8ie2QXMNeKRTHCNY2nXvo=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
+layeh.com/gopus v0.0.0-20161224163843-0ebf989153aa h1:WNU4LYsgD2UHxgKgB36mL6iMAMOvr127alafSlgBbiA=
 layeh.com/gopus v0.0.0-20161224163843-0ebf989153aa/go.mod h1:AOef7vHz0+v4sWwJnr0jSyHiX/1NgsMoaxl+rEPz/I0=
