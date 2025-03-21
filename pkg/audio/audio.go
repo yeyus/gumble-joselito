@@ -70,13 +70,13 @@ func UpsampleAndFilter(input []int16) []int16 {
 		}
 
 		// magic number amplification ¯\_(ツ)_/¯
-		acc *= 10
+		acc *= 6
 		// Clip and convert back to int16
 		if acc > 32767 {
-			log.Printf("clipping")
+			log.Printf("clipping+ %d sample = %f", i, acc)
 			acc = 32767
 		} else if acc < -32768 {
-			log.Printf("clipping")
+			log.Printf("clipping- %d sample = %f", i, acc)
 			acc = -32768
 		}
 		filtered[i] = int16(acc)
