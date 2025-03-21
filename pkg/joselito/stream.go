@@ -78,7 +78,8 @@ func (s *Stream) onCallStart(call *Call, msg *MessageCallStart) error {
 
 func (s *Stream) onCallEnd(call *Call, msg *MessageCallEnd) error {
 	s.logger.Printf("call end %s", call.String())
-	return s.Pause()
+	go s.Pause()
+	return nil
 }
 
 func (s *Stream) Play() error {
@@ -112,7 +113,7 @@ func (s *Stream) Pause() error {
 	s.state = StatePaused
 	s.lock.Unlock()
 	s.pause <- struct{}{}
-	s.logger.Printf("stream paused")
+
 	return nil
 }
 
@@ -150,6 +151,7 @@ func (s *Stream) process() {
 	for {
 		select {
 		case <-s.pause:
+			s.logger.Printf("stream paused")
 			return
 		case <-ticker.C:
 			if _, err := io.ReadFull(s.pipeReader, byteBuffer); err != nil {
