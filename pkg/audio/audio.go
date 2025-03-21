@@ -1,5 +1,7 @@
 package audio
 
+import "log"
+
 var ULawDecode = []int16{
 	-32124, -31100, -30076, -29052, -28028, -27004, -25980, -24956,
 	-23932, -22908, -21884, -20860, -19836, -18812, -17788, -16764,
@@ -68,11 +70,13 @@ func UpsampleAndFilter(input []int16) []int16 {
 		}
 
 		// magic number amplification ¯\_(ツ)_/¯
-		acc *= 35
+		acc *= 10
 		// Clip and convert back to int16
 		if acc > 32767 {
+			log.Printf("clipping")
 			acc = 32767
 		} else if acc < -32768 {
+			log.Printf("clipping")
 			acc = -32768
 		}
 		filtered[i] = int16(acc)
