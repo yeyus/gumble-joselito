@@ -6,8 +6,7 @@ import (
 )
 
 func TestMessageGroupJoinMarshall_SingleGroup(t *testing.T) {
-	message := NewMessageGroupJoin()
-	message.Groups = []*DMRID{NewDMRID(214)}
+	message := NewMessageGroupJoin([]*DMRID{NewDMRID(214)})
 
 	b, err := message.Marshall()
 	if err != nil {
@@ -21,7 +20,7 @@ func TestMessageGroupJoinMarshall_SingleGroup(t *testing.T) {
 }
 
 func TestMessageGroupJoinUnmarshall_SingleGroup(t *testing.T) {
-	entity := NewMessageGroupJoin()
+	entity := NewMessageGroupJoin(nil)
 
 	msg := []byte{0x92, 0x01, 0x91, 0xCC, 0xD6}
 	err := entity.Unmarshall(msg)
@@ -39,8 +38,7 @@ func TestMessageGroupJoinUnmarshall_SingleGroup(t *testing.T) {
 }
 
 func TestMessageGroupJoinMarshall_MultipleGroup(t *testing.T) {
-	message := NewMessageGroupJoin()
-	message.Groups = []*DMRID{NewDMRID(93), NewDMRID(222)}
+	message := NewMessageGroupJoin([]*DMRID{NewDMRID(93), NewDMRID(222)})
 
 	b, err := message.Marshall()
 	if err != nil {
@@ -54,7 +52,7 @@ func TestMessageGroupJoinMarshall_MultipleGroup(t *testing.T) {
 }
 
 func TestMessageGroupJoinUnmarshall_MultipleGroup(t *testing.T) {
-	entity := NewMessageGroupJoin()
+	entity := NewMessageGroupJoin(nil)
 
 	msg := []byte{0x92, 0x01, 0x92, 0xCE, 0x00, 0x07, 0xF0, 0x78, 0x5D}
 	err := entity.Unmarshall(msg)
