@@ -39,6 +39,10 @@ type Stream struct {
 	// Playback volume (can be changed while the source is playing).
 	Volume float32
 
+	// per struct buffers
+	pcm       []int16
+	upsampled *bytes.Buffer
+
 	lock sync.Mutex
 }
 
@@ -54,6 +58,10 @@ func NewStream(client *gumble.Client, session *Session) *Stream {
 		state:      StateInitial,
 		pipeWriter: w,
 		pipeReader: r,
+
+		// init buffers
+		pcm:       make([]int16, 960),
+		upsampled: new(bytes.Buffer),
 	}
 
 	session.AddOnCallStartCallback(stream.onCallStart)
@@ -70,37 +78,28 @@ var UPSAMPLE_FACTOR = 6
 
 func (s *Stream) onCallAudio(call *Call, msg *MessageCallAudio) error {
 	// do the conversion here
-	pcm := make([]int16, len(msg.Data))
 
-	for i := 0; i < len(msg.Data); i++ {
-		pcm[i] = audio.ULawDecode[msg.Data[i]]
+	for i := range msg.Data {
+		s.pcm[i] = audio.ULawDecode[msg.Data[i]]
 	}
 
 	// should output 960*6 in int16, len 5670 16 bit samples
-	upsampledAndFiltered := audio.UpsampleAndFilter(pcm)
+	upsampledAndFiltered := audio.UpsampleAndFilter(s.pcm)
 
 	// upsample by factor M=6, len upsampled*2bytes(int16)
-	upsampled := make([]byte, len(upsampledAndFiltered)*2)
-	buf := new(bytes.Buffer)
 	for i := 0; i < len(upsampledAndFiltered); i += 1 {
-		err := binary.Write(buf, binary.LittleEndian, upsampledAndFiltered[i])
+		err := binary.Write(s.upsampled, binary.LittleEndian, upsampledAndFiltered[i])
 		if err != nil {
 			s.logger.Fatal(err)
 		}
-
-		for j := 0; j < buf.Len(); j += 1 {
-			upsampled[(i*2)+j] = buf.Bytes()[j]
-		}
-		buf.Reset()
 	}
 
-	// Apply low pass filter and gain to buffer, before setting in buffer
-
-	_, err := s.pipeWriter.Write(upsampled)
+	_, err := s.upsampled.WriteTo(s.pipeWriter)
 	if err != nil {
 		s.logger.Printf("onCallAudio: problem writing audio samples: %v", err)
 		return err
 	}
+	s.upsampled.Reset()
 
 	return nil
 }
