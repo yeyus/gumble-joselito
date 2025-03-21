@@ -51,7 +51,7 @@ func NewSession(connection *websocket.Conn) *Session {
 			messageType, message, err := connection.ReadMessage()
 			if err != nil {
 				session.logger.Println("error reading from websocket:", err)
-				return
+				break
 			}
 
 			err = session.ProcessMessage(messageType, message)
@@ -59,8 +59,9 @@ func NewSession(connection *websocket.Conn) *Session {
 				session.logger.Printf("error processing protocol message: %v", err)
 			}
 
-			// log.Printf("recv: %s", message)
+			// session.logger.Printf("recv: %s", message)
 		}
+		session.logger.Printf("websocket loop died")
 	}()
 
 	return session
@@ -128,7 +129,10 @@ func (s *Session) onCallAlias(msg *MessageCallAlias) error {
 	}
 
 	for _, cb := range s.callTalkerAliasUpdateCallbacks {
-		cb(s.Call, msg)
+		err := cb(s.Call, msg)
+		if err != nil {
+			s.logger.Printf("callTalkerAliasUpdateCallbacks err: %v", err)
+		}
 	}
 
 	return nil
@@ -142,7 +146,10 @@ func (s *Session) onCallAudio(msg *MessageCallAudio) error {
 	s.logger.Printf("call audio received: %d", len(msg.Data))
 
 	for _, cb := range s.callAudioReceivedCallbacks {
-		cb(s.Call, msg)
+		err := cb(s.Call, msg)
+		if err != nil {
+			s.logger.Printf("callAudioReceivedCallbacks err: %v", err)
+		}
 	}
 
 	return nil
@@ -158,7 +165,10 @@ func (s *Session) onCallStart(msg *MessageCallStart) error {
 	s.logger.Printf("%s call start", s.Call)
 
 	for _, cb := range s.callStartCallbacks {
-		cb(s.Call, msg)
+		err := cb(s.Call, msg)
+		if err != nil {
+			s.logger.Printf("callStartCallbacks err: %v", err)
+		}
 	}
 
 	return nil
@@ -175,7 +185,10 @@ func (s *Session) onCallEnd(msg *MessageCallEnd) error {
 	}
 
 	for _, cb := range s.callEndCallbacks {
-		cb(s.Call, msg)
+		err := cb(s.Call, msg)
+		if err != nil {
+			s.logger.Printf("callEndCallbacks err: %v", err)
+		}
 	}
 
 	s.logger.Printf("%s call end", s.Call)
@@ -195,7 +208,10 @@ func (s *Session) onCallMeter(msg *MessageCallMeter) error {
 	}
 
 	for _, cb := range s.callMeterUpdateCallbacks {
-		cb(s.Call, msg)
+		err := cb(s.Call, msg)
+		if err != nil {
+			s.logger.Printf("callMeterUpdateCallbacks err: %v", err)
+		}
 	}
 
 	return nil

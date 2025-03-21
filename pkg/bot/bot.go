@@ -85,8 +85,6 @@ func (s *Bot) Connect() error {
 		return err
 	}
 
-	client.A
-
 	s.Client = client
 	return nil
 }
