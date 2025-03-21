@@ -1,6 +1,7 @@
 package joselito
 
 import (
+	"bytes"
 	"encoding/binary"
 	"errors"
 	"io"
@@ -9,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/yeyus/gumble-joselito/pkg/audio"
 	"github.com/yeyus/gumble/gumble"
 )
 
@@ -61,8 +63,32 @@ func NewStream(client *gumble.Client, session *Session) *Stream {
 	return stream
 }
 
+// Audio rate is 8000Hz, 8bit uLaw
+// 8bit * 960samples at 8.33Hz ws rate
+// conversion 960 * (interpolation factor M=6) = 5760samples
+var UPSAMPLE_FACTOR = 6
+
 func (s *Stream) onCallAudio(call *Call, msg *MessageCallAudio) error {
-	_, err := s.pipeWriter.Write(msg.Data)
+	// do the conversion here
+
+	// upsample by factor M=6
+	upsampled := make([]byte, len(msg.Data)*UPSAMPLE_FACTOR*2)
+	buf := new(bytes.Buffer)
+	for i := 0; i < len(msg.Data); i += 1 {
+		err := binary.Write(buf, binary.LittleEndian, audio.ULawDecode[msg.Data[i]])
+		if err != nil {
+			s.logger.Fatal(err)
+		}
+
+		for j := 0; j < buf.Len(); j += 1 {
+			upsampled[i*2*UPSAMPLE_FACTOR+j] = buf.Bytes()[j]
+		}
+		buf.Reset()
+	}
+
+	// Apply low pass filter and gain to buffer, before setting in buffer
+
+	_, err := s.pipeWriter.Write(upsampled)
 	if err != nil {
 		s.logger.Printf("onCallAudio: problem writing audio samples: %v", err)
 		return err
@@ -161,7 +187,7 @@ func (s *Stream) process() {
 			}
 			int16Buffer := make([]int16, frameSize)
 			for i := range int16Buffer {
-				float := float32(int16(binary.BigEndian.Uint16(byteBuffer[i*2 : (i+1)*2])))
+				float := float32(int16(binary.LittleEndian.Uint16(byteBuffer[i*2 : (i+1)*2])))
 				int16Buffer[i] = int16(s.Volume * float)
 			}
 			outgoing <- gumble.AudioBuffer(int16Buffer)
