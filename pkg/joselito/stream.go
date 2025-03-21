@@ -65,23 +65,31 @@ func NewStream(client *gumble.Client, session *Session) *Stream {
 
 // Audio rate is 8000Hz, 8bit uLaw
 // 8bit * 960samples at 8.33Hz ws rate
-// conversion 960 * (interpolation factor M=6) = 5760samples
+// conversion 960 (8bitsamples) * (interpolation factor M=6) * 2 channels= 11520 samples
 var UPSAMPLE_FACTOR = 6
 
 func (s *Stream) onCallAudio(call *Call, msg *MessageCallAudio) error {
 	// do the conversion here
+	pcm := make([]int16, len(msg.Data))
 
-	// upsample by factor M=6
-	upsampled := make([]byte, len(msg.Data)*UPSAMPLE_FACTOR*2)
+	for i := 0; i < len(msg.Data); i++ {
+		pcm[i] = audio.ULawDecode[msg.Data[i]]
+	}
+
+	// should output 960*6 in int16, len 5670 16 bit samples
+	upsampledAndFiltered := audio.UpsampleAndFilter(pcm)
+
+	// upsample by factor M=6, len upsampled*2bytes(int16)
+	upsampled := make([]byte, len(upsampledAndFiltered)*2)
 	buf := new(bytes.Buffer)
-	for i := 0; i < len(msg.Data); i += 1 {
-		err := binary.Write(buf, binary.LittleEndian, audio.ULawDecode[msg.Data[i]])
+	for i := 0; i < len(upsampledAndFiltered); i += 1 {
+		err := binary.Write(buf, binary.LittleEndian, upsampledAndFiltered[i])
 		if err != nil {
 			s.logger.Fatal(err)
 		}
 
 		for j := 0; j < buf.Len(); j += 1 {
-			upsampled[i*2*UPSAMPLE_FACTOR+j] = buf.Bytes()[j]
+			upsampled[(i*2)+j] = buf.Bytes()[j]
 		}
 		buf.Reset()
 	}

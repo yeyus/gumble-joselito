@@ -33,3 +33,50 @@ var ULawDecode = []int16{
 	244, 228, 212, 196, 180, 164, 148, 132,
 	120, 112, 104, 96, 88, 80, 72, 64,
 	56, 48, 40, 32, 24, 16, 8, 0}
+
+var firCoeffs = []float64{
+	-2.1734e-04, -5.2746e-04, -9.3654e-04, -1.4945e-03, -2.2148e-03, -3.0577e-03,
+	-3.9204e-03, -4.6356e-03, -4.9800e-03, -4.6927e-03, -3.5020e-03, -1.1580e-03,
+	2.5329e-03, 7.6751e-03, 1.4258e-02, 2.2142e-02, 3.1050e-02, 4.0587e-02,
+	5.0259e-02, 5.9510e-02, 6.7773e-02, 7.4514e-02, 7.9283e-02, 8.1753e-02,
+	8.1753e-02, 7.9283e-02, 7.4514e-02, 6.7773e-02, 5.9510e-02, 5.0259e-02,
+	4.0587e-02, 3.1050e-02, 2.2142e-02, 1.4258e-02, 7.6751e-03, 2.5329e-03,
+	-1.1580e-03, -3.5020e-03, -4.6927e-03, -4.9800e-03, -4.6356e-03, -3.9204e-03,
+	-3.0577e-03, -2.2148e-03, -1.4945e-03, -9.3654e-04, -5.2746e-04, -2.1734e-04,
+}
+
+func UpsampleAndFilter(input []int16) []int16 {
+	L := 6 // Upsampling factor
+	output := make([]int16, len(input)*L)
+
+	// Step 1: Zero-stuffing
+	for i, sample := range input {
+		output[i*L] = sample // Insert original sample
+		// All other values are already zero (default in Go)
+	}
+
+	// Step 2: FIR Filtering
+	N := len(firCoeffs)
+	filtered := make([]int16, len(output))
+
+	for i := range output {
+		var acc float64
+		for j := 0; j < N; j++ {
+			if i-j >= 0 {
+				acc += firCoeffs[j] * float64(output[i-j])
+			}
+		}
+
+		// magic number amplification ¯\_(ツ)_/¯
+		acc *= 35
+		// Clip and convert back to int16
+		if acc > 32767 {
+			acc = 32767
+		} else if acc < -32768 {
+			acc = -32768
+		}
+		filtered[i] = int16(acc)
+	}
+
+	return filtered
+}
