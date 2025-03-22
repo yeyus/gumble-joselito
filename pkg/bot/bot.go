@@ -2,6 +2,7 @@ package bot
 
 import (
 	"crypto/tls"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -151,6 +152,10 @@ func (s *Bot) StartStreaming() error {
 	s.session = joselito.NewSession(connection)
 	s.stream = joselito.NewStream(s.Client, s.session)
 
+	s.session.AddOnCallStartCallback(s.onCallStart)
+	s.session.AddOnCallEndCallback(s.onCallEnd)
+	s.session.AddOnCallAliasCallback(s.onTalkerAliasUpdate)
+
 	s.logger.Printf("joining talkgroups %v\n", s.talkgroups)
 	err = s.session.GroupJoin(s.talkgroups)
 	if err != nil {
@@ -158,6 +163,30 @@ func (s *Bot) StartStreaming() error {
 		s.Close()
 		return err
 	}
+
+	return nil
+}
+
+func (s *Bot) onCallStart(call *joselito.Call, msg *joselito.MessageCallStart) error {
+	s.Client.Do(func() {
+		s.Client.Self.Channel.Send(fmt.Sprintf("Call started de %d to %d", call.Origin.Id, call.Destination.Id), false)
+	})
+
+	return nil
+}
+
+func (s *Bot) onCallEnd(call *joselito.Call, msg *joselito.MessageCallEnd) error {
+	s.Client.Do(func() {
+		s.Client.Self.Channel.Send(fmt.Sprintf("Call ended, duration was %s", call.Duration().String()), false)
+	})
+
+	return nil
+}
+
+func (s *Bot) onTalkerAliasUpdate(call *joselito.Call, msg *joselito.MessageCallAlias) error {
+	s.Client.Do(func() {
+		s.Client.Self.Channel.Send(fmt.Sprintf("Talker Alias: %s", call.TalkerAlias), false)
+	})
 
 	return nil
 }

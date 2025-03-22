@@ -125,6 +125,10 @@ func (s *Session) onCallAlias(msg *MessageCallAlias) error {
 	s.logger.Printf("call alias: %s", msg.TalkerAlias)
 
 	if s.Call != nil {
+		if s.Call.TalkerAlias == msg.TalkerAlias {
+			return nil
+		}
+
 		s.Call.TalkerAlias = msg.TalkerAlias
 	}
 
