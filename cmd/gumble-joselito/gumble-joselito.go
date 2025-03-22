@@ -11,11 +11,11 @@ import (
 	"strings"
 
 	"github.com/yeyus/gumble-joselito/pkg/bot"
-	"github.com/yeyus/gumble-joselito/pkg/joselito"
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 	"github.com/yeyus/gumble/gumble"
 )
 
-type talkgroupList []*joselito.DMRID
+type talkgroupList []*dmr.DMRID
 
 func (i *talkgroupList) String() string {
 	return fmt.Sprintf("%v", *i)
@@ -26,7 +26,7 @@ func (i *talkgroupList) Set(value string) error {
 	if err != nil {
 		log.Panicf("can't parse talkgroup from value %s", value)
 	}
-	*i = append(*i, joselito.NewDMRID(uint(tg)))
+	*i = append(*i, dmr.NewDMRID(uint(tg)))
 	return nil
 }
 

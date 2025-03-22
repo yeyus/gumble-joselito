@@ -4,16 +4,17 @@ import (
 	"errors"
 
 	"github.com/vmihailenco/msgpack/v5"
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 )
 
 type MessageGroupJoin struct {
 	_msgpack struct{} `msgpack:",as_array"`
 
 	Type   MessageType
-	Groups []*DMRID
+	Groups []*dmr.DMRID
 }
 
-func NewMessageGroupJoin(groups []*DMRID) *MessageGroupJoin {
+func NewMessageGroupJoin(groups []*dmr.DMRID) *MessageGroupJoin {
 	return &MessageGroupJoin{
 		Type:   GROUP_JOIN,
 		Groups: groups,

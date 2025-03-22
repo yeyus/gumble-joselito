@@ -3,10 +3,12 @@ package joselito
 import (
 	"reflect"
 	"testing"
+
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 )
 
 func TestMessageCallStartMarshall(t *testing.T) {
-	message := NewMessageCallStart(NewDMRID(3101456), NewDMRID(93))
+	message := NewMessageCallStart(dmr.NewDMRID(3101456), dmr.NewDMRID(93))
 
 	b, err := message.Marshall()
 	if err != nil {

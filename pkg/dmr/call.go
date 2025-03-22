@@ -1,4 +1,4 @@
-package joselito
+package dmr
 
 import (
 	"fmt"
@@ -44,5 +44,5 @@ func (c *Call) Duration() time.Duration {
 }
 
 func (c *Call) String() string {
-	return fmt.Sprintf("[Call de:%d to:%d duration:%s talkeralias=%s]", c.Origin.Id, c.Destination.Id, c.Duration().String(), c.TalkerAlias)
+	return fmt.Sprintf("[Call de:%v to:%v duration:%s talkeralias=%s]", c.Origin.StringWithEmoji(), c.Destination.StringWithEmoji(), c.Duration().String(), c.TalkerAlias)
 }

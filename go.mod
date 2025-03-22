@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/enescakir/emoji v1.0.0 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	layeh.com/gopus v0.0.0-20161224163843-0ebf989153aa // indirect

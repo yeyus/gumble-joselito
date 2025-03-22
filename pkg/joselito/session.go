@@ -6,22 +6,23 @@ import (
 	"os"
 
 	"github.com/gorilla/websocket"
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 )
 
-type OnCallStartCallback func(*Call, *MessageCallStart) error
-type OnCallEndCallback func(*Call, *MessageCallEnd) error
-type OnCallMeterUpdateCallback func(*Call, *MessageCallMeter) error
-type OnCallTalkerAliasUpdateCallback func(*Call, *MessageCallAlias) error
-type OnCallAudioReceivedCallback func(*Call, *MessageCallAudio) error
+type OnCallStartCallback func(*dmr.Call, *MessageCallStart) error
+type OnCallEndCallback func(*dmr.Call, *MessageCallEnd) error
+type OnCallMeterUpdateCallback func(*dmr.Call, *MessageCallMeter) error
+type OnCallTalkerAliasUpdateCallback func(*dmr.Call, *MessageCallAlias) error
+type OnCallAudioReceivedCallback func(*dmr.Call, *MessageCallAudio) error
 
 type Session struct {
 	logger *log.Logger
 
 	connection *websocket.Conn
-	Talkgroups []*DMRID
+	Talkgroups []*dmr.DMRID
 
 	// Last Call
-	Call *Call
+	Call *dmr.Call
 
 	callStartCallbacks             []OnCallStartCallback
 	callEndCallbacks               []OnCallEndCallback
@@ -36,7 +37,7 @@ func NewSession(connection *websocket.Conn) *Session {
 	session := &Session{
 		logger:                         log.New(os.Stdout, "[joselito-session] ", log.LstdFlags),
 		connection:                     connection,
-		Talkgroups:                     make([]*DMRID, 0),
+		Talkgroups:                     make([]*dmr.DMRID, 0),
 		SessionEnd:                     make(chan struct{}),
 		callStartCallbacks:             make([]OnCallStartCallback, 0),
 		callEndCallbacks:               make([]OnCallEndCallback, 0),
@@ -67,7 +68,7 @@ func NewSession(connection *websocket.Conn) *Session {
 	return session
 }
 
-func (s *Session) GroupJoin(talkgroups []*DMRID) error {
+func (s *Session) GroupJoin(talkgroups []*dmr.DMRID) error {
 	s.Talkgroups = append(s.Talkgroups, talkgroups...)
 	joinMessage, err := NewMessageGroupJoin(s.Talkgroups).Marshall()
 	if err != nil {
@@ -164,7 +165,7 @@ func (s *Session) AddOnCallStartCallback(cb OnCallStartCallback) {
 }
 
 func (s *Session) onCallStart(msg *MessageCallStart) error {
-	s.Call = NewCall(msg.Origin, msg.Destination)
+	s.Call = dmr.NewCall(msg.Origin, msg.Destination)
 
 	s.logger.Printf("%s call start", s.Call)
 

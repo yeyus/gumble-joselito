@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/yeyus/gumble-joselito/pkg/audio"
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 	"github.com/yeyus/gumble/gumble"
 )
 
@@ -76,7 +77,7 @@ func NewStream(client *gumble.Client, session *Session) *Stream {
 // conversion 960 (8bitsamples) * (interpolation factor M=6) * 2 channels= 11520 samples
 var UPSAMPLE_FACTOR = 6
 
-func (s *Stream) onCallAudio(call *Call, msg *MessageCallAudio) error {
+func (s *Stream) onCallAudio(call *dmr.Call, msg *MessageCallAudio) error {
 	// do the conversion here
 
 	for i := range msg.Data {
@@ -104,12 +105,12 @@ func (s *Stream) onCallAudio(call *Call, msg *MessageCallAudio) error {
 	return nil
 }
 
-func (s *Stream) onCallStart(call *Call, msg *MessageCallStart) error {
+func (s *Stream) onCallStart(call *dmr.Call, msg *MessageCallStart) error {
 	s.logger.Printf("call started %s", call.String())
 	return s.Play()
 }
 
-func (s *Stream) onCallEnd(call *Call, msg *MessageCallEnd) error {
+func (s *Stream) onCallEnd(call *dmr.Call, msg *MessageCallEnd) error {
 	s.logger.Printf("call end %s", call.String())
 	go s.Pause()
 	return nil
