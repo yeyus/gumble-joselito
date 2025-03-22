@@ -170,7 +170,7 @@ func (s *Bot) StartStreaming() error {
 
 func (s *Bot) onCallStart(call *dmr.Call, msg *joselito.MessageCallStart) error {
 	s.Client.Do(func() {
-		s.Client.Self.Channel.Send(fmt.Sprintf("Call started de %d to %d", call.Origin.Id, call.Destination.Id), false)
+		s.Client.Self.Channel.Send(fmt.Sprintf("Call started de %v to %v", call.Origin.StringWithEmoji(), call.Destination.StringWithEmoji()), false)
 	})
 
 	return nil
