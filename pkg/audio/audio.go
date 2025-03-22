@@ -47,7 +47,7 @@ var firCoeffs = []float64{
 	-3.0577e-03, -2.2148e-03, -1.4945e-03, -9.3654e-04, -5.2746e-04, -2.1734e-04,
 }
 
-func UpsampleAndFilter(input []int16) []int16 {
+func FIRUpsampler(input []int16) []int16 {
 	L := 6 // Upsampling factor
 	output := make([]int16, len(input)*L)
 
@@ -83,4 +83,28 @@ func UpsampleAndFilter(input []int16) []int16 {
 	}
 
 	return filtered
+}
+
+func LinearUpsampler(input []int16, L int) []int16 {
+	output := make([]int16, len(input)*L)
+
+	// Loop over input samples
+	for i := 0; i < len(input)-1; i++ {
+		start := input[i]
+		end := input[i+1]
+
+		// Insert original sample
+		output[i*L] = start
+
+		// Linear interpolation for L-1 new samples
+		for j := 1; j < L; j++ {
+			frac := float64(j) / float64(L)
+			output[i*L+j] = int16(float64(start) + frac*float64(end-start))
+		}
+	}
+
+	// Copy the last sample (since there's no next sample to interpolate)
+	output[len(output)-L] = input[len(input)-1]
+
+	return output
 }

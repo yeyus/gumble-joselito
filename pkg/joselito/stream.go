@@ -84,7 +84,7 @@ func (s *Stream) onCallAudio(call *Call, msg *MessageCallAudio) error {
 	}
 
 	// should output 960*6 in int16, len 5670 16 bit samples
-	upsampledAndFiltered := audio.UpsampleAndFilter(s.pcm)
+	upsampledAndFiltered := audio.LinearUpsampler(s.pcm, UPSAMPLE_FACTOR)
 
 	// upsample by factor M=6, len upsampled*2bytes(int16)
 	for i := 0; i < len(upsampledAndFiltered); i += 1 {
