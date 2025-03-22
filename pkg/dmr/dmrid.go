@@ -1,4 +1,4 @@
-package joselito
+package dmr
 
 import "github.com/vmihailenco/msgpack/v5"
 

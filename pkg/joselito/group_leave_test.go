@@ -3,11 +3,13 @@ package joselito
 import (
 	"reflect"
 	"testing"
+
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 )
 
 func TestMessageGroupLeaveMarshall_SingleGroup(t *testing.T) {
 	message := NewMessageGroupLeave()
-	message.Groups = []*DMRID{NewDMRID(214)}
+	message.Groups = []*dmr.DMRID{dmr.NewDMRID(214)}
 
 	b, err := message.Marshall()
 	if err != nil {

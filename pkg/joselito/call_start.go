@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/vmihailenco/msgpack/v5"
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 )
 
 type MessageCallStart struct {
@@ -11,12 +12,12 @@ type MessageCallStart struct {
 
 	Type        MessageType
 	Unknown1    uint
-	Origin      *DMRID
-	Destination *DMRID
+	Origin      *dmr.DMRID
+	Destination *dmr.DMRID
 	Unknown2    uint
 }
 
-func NewMessageCallStart(origin *DMRID, destination *DMRID) *MessageCallStart {
+func NewMessageCallStart(origin *dmr.DMRID, destination *dmr.DMRID) *MessageCallStart {
 	return &MessageCallStart{
 		Type:        CALL_START,
 		Unknown1:    0,

@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 	"github.com/yeyus/gumble-joselito/pkg/joselito"
 	"github.com/yeyus/gumble/gumble"
 	"github.com/yeyus/gumble/gumbleutil"
@@ -45,12 +46,12 @@ type Bot struct {
 	websocketConnection *websocket.Conn
 	session             *joselito.Session
 	stream              *joselito.Stream
-	talkgroups          []*joselito.DMRID
+	talkgroups          []*dmr.DMRID
 
 	WaitGroup *sync.WaitGroup
 }
 
-func NewBot(address string, room []string, config *gumble.Config, tlsConfig *tls.Config, wsEndpoint string, wsHeaders http.Header, talkgroups []*joselito.DMRID) *Bot {
+func NewBot(address string, room []string, config *gumble.Config, tlsConfig *tls.Config, wsEndpoint string, wsHeaders http.Header, talkgroups []*dmr.DMRID) *Bot {
 	return &Bot{
 		logger:        log.New(os.Stdout, "[bot] ", log.LstdFlags),
 		State:         StreamerStateDisconnected,
@@ -167,7 +168,7 @@ func (s *Bot) StartStreaming() error {
 	return nil
 }
 
-func (s *Bot) onCallStart(call *joselito.Call, msg *joselito.MessageCallStart) error {
+func (s *Bot) onCallStart(call *dmr.Call, msg *joselito.MessageCallStart) error {
 	s.Client.Do(func() {
 		s.Client.Self.Channel.Send(fmt.Sprintf("Call started de %d to %d", call.Origin.Id, call.Destination.Id), false)
 	})
@@ -175,7 +176,7 @@ func (s *Bot) onCallStart(call *joselito.Call, msg *joselito.MessageCallStart) e
 	return nil
 }
 
-func (s *Bot) onCallEnd(call *joselito.Call, msg *joselito.MessageCallEnd) error {
+func (s *Bot) onCallEnd(call *dmr.Call, msg *joselito.MessageCallEnd) error {
 	s.Client.Do(func() {
 		s.Client.Self.Channel.Send(fmt.Sprintf("Call ended, duration was %s", call.Duration().String()), false)
 	})
@@ -183,7 +184,7 @@ func (s *Bot) onCallEnd(call *joselito.Call, msg *joselito.MessageCallEnd) error
 	return nil
 }
 
-func (s *Bot) onTalkerAliasUpdate(call *joselito.Call, msg *joselito.MessageCallAlias) error {
+func (s *Bot) onTalkerAliasUpdate(call *dmr.Call, msg *joselito.MessageCallAlias) error {
 	s.Client.Do(func() {
 		s.Client.Self.Channel.Send(fmt.Sprintf("Talker Alias: %s", call.TalkerAlias), false)
 	})

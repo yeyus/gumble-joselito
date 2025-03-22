@@ -4,13 +4,14 @@ import (
 	"errors"
 
 	"github.com/vmihailenco/msgpack/v5"
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 )
 
 type MessageGroupLeave struct {
 	_msgpack struct{} `msgpack:",as_array"`
 
 	Type   MessageType
-	Groups []*DMRID
+	Groups []*dmr.DMRID
 }
 
 func NewMessageGroupLeave() *MessageGroupLeave {

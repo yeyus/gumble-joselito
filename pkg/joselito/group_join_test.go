@@ -3,10 +3,12 @@ package joselito
 import (
 	"reflect"
 	"testing"
+
+	"github.com/yeyus/gumble-joselito/pkg/dmr"
 )
 
 func TestMessageGroupJoinMarshall_SingleGroup(t *testing.T) {
-	message := NewMessageGroupJoin([]*DMRID{NewDMRID(214)})
+	message := NewMessageGroupJoin([]*dmr.DMRID{dmr.NewDMRID(214)})
 
 	b, err := message.Marshall()
 	if err != nil {
@@ -38,7 +40,7 @@ func TestMessageGroupJoinUnmarshall_SingleGroup(t *testing.T) {
 }
 
 func TestMessageGroupJoinMarshall_MultipleGroup(t *testing.T) {
-	message := NewMessageGroupJoin([]*DMRID{NewDMRID(93), NewDMRID(222)})
+	message := NewMessageGroupJoin([]*dmr.DMRID{dmr.NewDMRID(93), dmr.NewDMRID(222)})
 
 	b, err := message.Marshall()
 	if err != nil {
